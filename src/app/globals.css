@@ -204,3 +204,90 @@
   border-right: 2px solid rgba(6, 182, 212, 0.6);
   pointer-events: none;
 }
+
+/* Zero-Latency HUD Reticle Cursor */
+html.hud-cursor-active,
+html.hud-cursor-active * {
+  cursor: none !important;
+}
+
+/*
+ * Reticle ring — absolute inside the wrapper.
+ * translate(-50%,-50%) keeps it centered on the wrapper's origin (= mouse hotspot).
+ * Scale is appended to that transform so centering is preserved on click.
+ */
+.hud-reticle-ring {
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid rgba(6, 182, 212, 0.55);
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.25);
+  color: #22d3ee;
+  transform: translate(-50%, -50%);
+  transition: width 0.12s ease, height 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.hud-reticle-ring[data-state="cyan"] {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  border-color: #22d3ee;
+  box-shadow: 0 0 14px rgba(6, 182, 212, 0.5);
+  color: #22d3ee;
+}
+
+.hud-reticle-ring[data-state="red"] {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border-color: #ef4444;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.6);
+  color: #ef4444;
+}
+
+.hud-reticle-ring[data-state="gold"] {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  border-color: #f59e0b;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
+  color: #f59e0b;
+}
+
+/* Keep centering translate, append scale on click */
+.hud-reticle-ring[data-clicking="true"] {
+  transform: translate(-50%, -50%) scale(0.85);
+}
+
+.crosshair-tick {
+  position: absolute;
+  background-color: currentColor;
+  opacity: 0.75;
+}
+.crosshair-top {
+  top: -4px;
+  width: 1px;
+  height: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.crosshair-bottom {
+  bottom: -4px;
+  width: 1px;
+  height: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.crosshair-left {
+  left: -4px;
+  width: 3px;
+  height: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.crosshair-right {
+  right: -4px;
+  width: 3px;
+  height: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+}

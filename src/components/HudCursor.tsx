@@ -3,44 +3,35 @@
 import { useEffect, useRef } from "react";
 
 export function HudCursor() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const reticleRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
-  const dotRef = useRef<HTMLDivElement>(null);
-  const labelRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    // Check if fine pointer device
+    // Only activate on devices with fine pointer (mouse/trackpad)
     if (typeof window === "undefined" || !window.matchMedia("(pointer: fine)").matches) {
       return;
     }
 
-    const container = containerRef.current;
+    const reticle = reticleRef.current;
     const ring = ringRef.current;
-    const dot = dotRef.current;
-    const label = labelRef.current;
-    if (!container || !ring || !dot || !label) return;
+    if (!reticle || !ring) return;
 
-    let targetX = -100;
-    let targetY = -100;
-    let ringX = -100;
-    let ringY = -100;
-    let isClicking = false;
     let isVisible = false;
-    let animId: number;
+
+    // Hide native cursor while HUD reticle is active
+    document.documentElement.classList.add("hud-cursor-active");
 
     const onMouseMove = (e: MouseEvent) => {
-      targetX = e.clientX;
-      targetY = e.clientY;
+      // Use left/top for placement so CSS transform (-50%,-50%) keeps centering intact
+      reticle.style.left = `${e.clientX}px`;
+      reticle.style.top = `${e.clientY}px`;
 
       if (!isVisible) {
         isVisible = true;
-        container.style.opacity = "1";
+        reticle.style.opacity = "1";
       }
 
-      // 0ms instant update for primary dot — zero React lag!
-      dot.style.transform = `translate3d(${targetX}px, ${targetY}px, 0)`;
-
-      // Fast target detection without React re-renders
+      // Fast target detection for color & scale state
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
@@ -60,45 +51,30 @@ export function HudCursor() {
           className.includes("rose") ||
           className.includes("red")
         ) {
-          ring.className =
-            "relative flex items-center justify-center w-8 h-8 -top-4 -left-4 rounded-sm border border-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)] transition-all duration-100 scale-110";
-          label.textContent = "LOCK";
-          label.className = "absolute -right-8 top-0 text-[8px] font-mono font-bold tracking-tighter uppercase text-red-400";
+          ring.setAttribute("data-state", "red");
         } else if (
           text.includes("pause") ||
           text.includes("caution") ||
           className.includes("amber")
         ) {
-          ring.className =
-            "relative flex items-center justify-center w-8 h-8 -top-4 -left-4 rounded-sm border border-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.5)] transition-all duration-100 scale-110";
-          label.textContent = "LOCK";
-          label.className = "absolute -right-8 top-0 text-[8px] font-mono font-bold tracking-tighter uppercase text-amber-400";
+          ring.setAttribute("data-state", "gold");
         } else {
-          ring.className =
-            "relative flex items-center justify-center w-8 h-8 -top-4 -left-4 rounded-sm border border-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.5)] transition-all duration-100 scale-110";
-          label.textContent = "LOCK";
-          label.className = "absolute -right-8 top-0 text-[8px] font-mono font-bold tracking-tighter uppercase text-cyan-400";
+          ring.setAttribute("data-state", "cyan");
         }
       } else {
-        ring.className =
-          "relative flex items-center justify-center w-6 h-6 -top-3 -left-3 rounded-full border border-cyan-500/50 transition-all duration-100 scale-100";
-        label.textContent = "";
-        label.className = "hidden";
+        ring.setAttribute("data-state", "default");
       }
     };
 
     const onMouseDown = () => {
-      isClicking = true;
-      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) scale(0.85)`;
+      ring.setAttribute("data-clicking", "true");
     };
 
     const onMouseUp = () => {
-      isClicking = false;
-      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) scale(1)`;
+      ring.removeAttribute("data-clicking");
     };
 
-    const onMouseLeaveWindow = (e: MouseEvent) => {
-      // Only hide if the mouse genuinely left the browser viewport
+    const onMouseLeave = (e: MouseEvent) => {
       if (
         e.clientY <= 0 ||
         e.clientX <= 0 ||
@@ -106,66 +82,63 @@ export function HudCursor() {
         e.clientY >= window.innerHeight
       ) {
         isVisible = false;
-        container.style.opacity = "0";
+        reticle.style.opacity = "0";
       }
     };
 
-    const onMouseEnterWindow = () => {
+    const onMouseEnter = () => {
       isVisible = true;
-      container.style.opacity = "1";
+      reticle.style.opacity = "1";
     };
 
     window.addEventListener("mousemove", onMouseMove, { passive: true });
-    window.addEventListener("mousedown", onMouseDown, { passive: true });
-    window.addEventListener("mouseup", onMouseUp, { passive: true });
-    document.addEventListener("mouseleave", onMouseLeaveWindow);
-    document.addEventListener("mouseenter", onMouseEnterWindow);
-
-    // Highly responsive 60fps transform loop for outer ring (lerp factor 0.45 for snappy, lag-free feel)
-    const tickLoop = () => {
-      ringX += (targetX - ringX) * 0.45;
-      ringY += (targetY - ringY) * 0.45;
-
-      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) ${
-        isClicking ? "scale(0.85)" : ""
-      }`;
-
-      animId = requestAnimationFrame(tickLoop);
-    };
-
-    animId = requestAnimationFrame(tickLoop);
+    window.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mouseup", onMouseUp);
+    document.addEventListener("mouseleave", onMouseLeave);
+    document.addEventListener("mouseenter", onMouseEnter);
 
     return () => {
+      document.documentElement.classList.remove("hud-cursor-active");
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mouseup", onMouseUp);
-      document.removeEventListener("mouseleave", onMouseLeaveWindow);
-      document.removeEventListener("mouseenter", onMouseEnterWindow);
-      cancelAnimationFrame(animId);
+      document.removeEventListener("mouseleave", onMouseLeave);
+      document.removeEventListener("mouseenter", onMouseEnter);
     };
   }, []);
 
   return (
+    /*
+     * The wrapper is fixed, positioned via left/top in JS.
+     * -translate-x-1/2 -translate-y-1/2 centers the whole reticle on that point.
+     * Both the dot and ring are absolute inside, also centered independently.
+     * This guarantees dot center === ring center === mouse hotspot.
+     */
     <div
-      ref={containerRef}
-      className="pointer-events-none fixed inset-0 z-[99999] overflow-hidden select-none opacity-0 transition-opacity duration-150"
+      ref={reticleRef}
+      className="pointer-events-none fixed z-[999999] opacity-0 select-none"
+      style={{
+        top: "-100px",
+        left: "-100px",
+        transform: "translate(-50%, -50%)",
+        willChange: "left, top",
+      }}
     >
-      {/* 1. Fast Primary Center Reticle Dot (0ms lag, direct transform) */}
-      <div
-        ref={dotRef}
-        className="fixed top-0 left-0 w-2 h-2 -ml-1 -mt-1 rounded-full bg-cyan-300 shadow-[0_0_8px_#06b6d4] will-change-transform"
-      />
-
-      {/* 2. Snappy Outer Targeting Reticle */}
+      {/* Outer Targeting Ring — absolute centered, same origin as dot */}
       <div
         ref={ringRef}
-        className="fixed top-0 left-0 will-change-transform"
+        data-state="default"
+        className="hud-reticle-ring absolute top-1/2 left-1/2 rounded-full"
       >
-        <span
-          ref={labelRef}
-          className="hidden"
-        />
+        {/* Cardinal Crosshair Ticks */}
+        <span className="crosshair-tick crosshair-top" />
+        <span className="crosshair-tick crosshair-bottom" />
+        <span className="crosshair-tick crosshair-left" />
+        <span className="crosshair-tick crosshair-right" />
       </div>
+
+      {/* Precision Center Dot — absolute centered, painted above ring */}
+      <div className="absolute top-1/2 left-1/2 w-1.5 h-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-300 shadow-[0_0_6px_#22d3ee] z-10" />
     </div>
   );
 }
