@@ -13,8 +13,6 @@ import {
   Cpu,
   AlertOctagon,
   History,
-  Zap,
-  PlusCircle,
 } from "lucide-react";
 
 export function DashboardHeader() {
@@ -23,19 +21,11 @@ export function DashboardHeader() {
     time,
     isRunning,
     demoSuspiciousActive,
-    spikeActive,
-    apps,
     start,
     pause,
     reset,
     toggleDemoSuspicious,
-    toggleSpike,
-    injectTestRequest,
   } = useSimulationStore();
-
-  const fitpulse = apps.fitpulse;
-  const hasContactsRequest = fitpulse?.requests.includes("contacts");
-  const hasContactsAllowed = fitpulse?.grants.contacts === "allowed";
 
   return (
     <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-30 px-6 py-4">
@@ -113,54 +103,20 @@ export function DashboardHeader() {
             </div>
           </div>
 
-          {/* Dev Test: Force spike on FitPulse */}
+          {/* SPEC §10: Real "Simulate suspicious behaviour" button (Red) */}
           <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleSpike}
-            className={`text-xs font-mono gap-1.5 transition-all ${
-              spikeActive
-                ? "bg-amber-600 hover:bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-950/80 animate-pulse font-bold"
-                : "bg-slate-900 border-slate-700/80 text-amber-300 hover:bg-amber-950/50 hover:text-amber-200"
-            }`}
-            title="Multiplies FitPulse access frequency by 6x to trigger frequency anomaly recommendation"
-          >
-            <Zap className={`h-3.5 w-3.5 ${spikeActive ? "animate-bounce" : "text-amber-400"}`} />
-            {spikeActive ? "Stop spike (6x Active)" : "Force spike on FitPulse"}
-          </Button>
-
-          {/* Dev Test: Inject contacts request */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => injectTestRequest("fitpulse", "contacts")}
-            disabled={hasContactsRequest || hasContactsAllowed}
-            className="text-xs font-mono gap-1.5 bg-slate-900 border-slate-700/80 text-cyan-300 hover:bg-cyan-950/50 hover:text-cyan-200 disabled:opacity-40"
-            title="Inject an unjustified contacts request on FitPulse to trigger Deny recommendation"
-          >
-            <PlusCircle className="h-3.5 w-3.5 text-cyan-400" />
-            {hasContactsRequest
-              ? "Contacts Requested"
-              : hasContactsAllowed
-              ? "Contacts Granted"
-              : "Inject request (Contacts)"}
-          </Button>
-
-          {/* SPEC §10: Simulate suspicious behaviour button (Red) */}
-          <Button
-            variant="outline"
             size="sm"
             onClick={toggleDemoSuspicious}
-            className={`text-xs font-mono gap-1.5 transition-all ${
+            className={`text-xs font-mono gap-1.5 transition-all font-bold shadow-md cursor-pointer ${
               demoSuspiciousActive
-                ? "bg-rose-600 hover:bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-950/80 animate-pulse font-bold"
-                : "bg-rose-950/70 border-rose-700/80 text-rose-300 hover:bg-rose-900 hover:text-white"
+                ? "bg-rose-700 hover:bg-rose-600 text-white border border-rose-400 shadow-rose-950/80 animate-pulse ring-2 ring-rose-500/50"
+                : "bg-rose-600 hover:bg-rose-500 text-white border border-rose-500 shadow-rose-950/60"
             }`}
-            title="SPEC §10 demo scenario: triggers 6x frequency spike, staged requests (contacts, mic, sms), and unauthorized accesses on FitPulse"
+            title="SPEC §10 demo scenario: triggers 6x frequency spike on FitPulse, staged requests (contacts, mic, sms), and unauthorized accesses"
           >
             <AlertOctagon
-              className={`h-3.5 w-3.5 ${
-                demoSuspiciousActive ? "animate-spin text-white" : "text-rose-400"
+              className={`h-4 w-4 ${
+                demoSuspiciousActive ? "animate-spin text-white" : "text-white"
               }`}
             />
             {demoSuspiciousActive

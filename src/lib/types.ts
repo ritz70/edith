@@ -128,5 +128,7 @@ export interface SimulationState {
   spikeActive: boolean;
   /** Tick at which demoSuspiciousActive was set, for scheduling staged requests */
   demoStartTick?: number;
+  /** Staged requests that have already been injected in this demo run */
+  demoInjectedRequests?: string[];
   alertCooldowns: Record<string, number>;
 }

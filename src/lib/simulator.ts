@@ -64,66 +64,74 @@ export function tick(
   // --- SPEC §10: Handle demo scenario staged requests ---
   // Deep clone apps so we can mutate for staged request injection this tick
   let appsThisTick = state.apps;
+  let demoInjected = state.demoInjectedRequests ? [...state.demoInjectedRequests] : [];
+
   if (state.demoSuspiciousActive && state.demoStartTick !== undefined) {
     const elapsed = nextTick - state.demoStartTick;
     const fitpulse = { ...state.apps["fitpulse"] };
     let updated = false;
 
-    // Tick+3: inject contacts request if not already present/granted
-    if (
-      elapsed >= 3 &&
-      !fitpulse.requests.includes("contacts") &&
-      fitpulse.grants["contacts"] !== "allowed"
-    ) {
-      fitpulse.requests = [...fitpulse.requests, "contacts"];
-      newAuditEntries.push({
-        id: `aud-${nextTick}-demo-contacts-req`,
-        tick: nextTick,
-        time: nextTime,
-        appId: "fitpulse",
-        kind: "permission_change",
-        actor: "system",
-        detail: "FitPulse [demo] submitted permission request: Contacts",
-      });
-      updated = true;
+    // Tick+3: inject contacts request once if not already granted
+    if (elapsed >= 3 && !demoInjected.includes("contacts")) {
+      demoInjected.push("contacts");
+      if (
+        !fitpulse.requests.includes("contacts") &&
+        fitpulse.grants["contacts"] !== "allowed"
+      ) {
+        fitpulse.requests = [...fitpulse.requests, "contacts"];
+        newAuditEntries.push({
+          id: `aud-${nextTick}-demo-contacts-req`,
+          tick: nextTick,
+          time: nextTime,
+          appId: "fitpulse",
+          kind: "permission_change",
+          actor: "system",
+          detail: "FitPulse [demo] submitted permission request: Contacts",
+        });
+        updated = true;
+      }
     }
 
-    // Tick+6: inject microphone request if not already present/granted
-    if (
-      elapsed >= 6 &&
-      !fitpulse.requests.includes("microphone") &&
-      fitpulse.grants["microphone"] !== "allowed"
-    ) {
-      fitpulse.requests = [...fitpulse.requests, "microphone"];
-      newAuditEntries.push({
-        id: `aud-${nextTick}-demo-mic-req`,
-        tick: nextTick,
-        time: nextTime,
-        appId: "fitpulse",
-        kind: "permission_change",
-        actor: "system",
-        detail: "FitPulse [demo] submitted permission request: Microphone",
-      });
-      updated = true;
+    // Tick+6: inject microphone request once if not already granted
+    if (elapsed >= 6 && !demoInjected.includes("microphone")) {
+      demoInjected.push("microphone");
+      if (
+        !fitpulse.requests.includes("microphone") &&
+        fitpulse.grants["microphone"] !== "allowed"
+      ) {
+        fitpulse.requests = [...fitpulse.requests, "microphone"];
+        newAuditEntries.push({
+          id: `aud-${nextTick}-demo-mic-req`,
+          tick: nextTick,
+          time: nextTime,
+          appId: "fitpulse",
+          kind: "permission_change",
+          actor: "system",
+          detail: "FitPulse [demo] submitted permission request: Microphone",
+        });
+        updated = true;
+      }
     }
 
-    // Tick+9: inject sms request if not already present/granted
-    if (
-      elapsed >= 9 &&
-      !fitpulse.requests.includes("sms") &&
-      fitpulse.grants["sms"] !== "allowed"
-    ) {
-      fitpulse.requests = [...fitpulse.requests, "sms"];
-      newAuditEntries.push({
-        id: `aud-${nextTick}-demo-sms-req`,
-        tick: nextTick,
-        time: nextTime,
-        appId: "fitpulse",
-        kind: "permission_change",
-        actor: "system",
-        detail: "FitPulse [demo] submitted permission request: SMS",
-      });
-      updated = true;
+    // Tick+9: inject sms request once if not already granted
+    if (elapsed >= 9 && !demoInjected.includes("sms")) {
+      demoInjected.push("sms");
+      if (
+        !fitpulse.requests.includes("sms") &&
+        fitpulse.grants["sms"] !== "allowed"
+      ) {
+        fitpulse.requests = [...fitpulse.requests, "sms"];
+        newAuditEntries.push({
+          id: `aud-${nextTick}-demo-sms-req`,
+          tick: nextTick,
+          time: nextTime,
+          appId: "fitpulse",
+          kind: "permission_change",
+          actor: "system",
+          detail: "FitPulse [demo] submitted permission request: SMS",
+        });
+        updated = true;
+      }
     }
 
     if (updated) {
@@ -139,8 +147,10 @@ export function tick(
     }
 
     for (const [permId, config] of Object.entries(app.baseline)) {
-      // Dev spike / demo scenario: 6x baseline multiplier on FitPulse when spikeActive
-      const isSpiked = state.spikeActive && app.id === "fitpulse";
+      // Dev spike / demo scenario: 6x baseline multiplier on FitPulse when spikeActive or demoSuspiciousActive
+      const isSpiked =
+        (state.spikeActive || state.demoSuspiciousActive) &&
+        app.id === "fitpulse";
       const effectiveRate = isSpiked ? config.rate * 6 : config.rate;
       const attempts =
         Math.floor(effectiveRate) +
@@ -309,5 +319,6 @@ export function tick(
     auditLog: [...newAuditEntries, ...state.auditLog].slice(0, 1000),
     trustSnapshots: trimmedSnapshots,
     alertCooldowns: currentCooldowns,
+    demoInjectedRequests: demoInjected,
   };
 }

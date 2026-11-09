@@ -58,10 +58,11 @@ export function createInitialState(): SimulationState {
       },
     ],
     trustSnapshots: initialSnapshots,
-    isRunning: false,
+    isRunning: true,
     demoSuspiciousActive: false,
     spikeActive: false,
     demoStartTick: undefined,
+    demoInjectedRequests: [],
     alertCooldowns: {},
   };
 }
@@ -80,7 +81,7 @@ export const useSimulationStore = create<SimulationStore>()((set) => ({
     rng = mulberry32(INITIAL_SEED);
     set({
       ...createInitialState(),
-      isRunning: false,
+      isRunning: true,
       selectedAppId: null,
     });
   },
@@ -119,6 +120,7 @@ export const useSimulationStore = create<SimulationStore>()((set) => ({
         demoSuspiciousActive: next,
         spikeActive: next,
         demoStartTick: startTick,
+        demoInjectedRequests: next ? [] : state.demoInjectedRequests,
         auditLog: [auditEntry, ...state.auditLog].slice(0, 1000),
       };
     });

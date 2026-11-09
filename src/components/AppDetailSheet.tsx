@@ -18,7 +18,6 @@ import {
   AlertTriangle,
   Ban,
   RotateCw,
-  PlusCircle,
   Clock,
   ShieldOff,
   Sparkles,
@@ -48,7 +47,6 @@ export function AppDetailSheet() {
     reinstateApp,
     approveRequest,
     denyRequest,
-    injectTestRequest,
   } = useSimulationStore();
 
   if (!selectedAppId) return null;
@@ -183,27 +181,6 @@ export function AppDetailSheet() {
               <Clock className="h-4 w-4 text-cyan-400" />
               Pending Permission Requests ({app.requests.length})
             </h3>
-
-            {/* Test Injection Button for FitPulse contacts */}
-            {app.id === "fitpulse" && (
-              <Button
-                variant="outline"
-                size="xs"
-                onClick={() => injectTestRequest("fitpulse", "contacts")}
-                disabled={
-                  app.requests.includes("contacts") ||
-                  app.grants.contacts === "allowed"
-                }
-                className="bg-cyan-950/40 border-cyan-800/80 text-cyan-300 hover:bg-cyan-900/60 text-[10px] gap-1 disabled:opacity-50"
-              >
-                <PlusCircle className="h-3 w-3" />
-                {app.requests.includes("contacts")
-                  ? "Contacts Requested"
-                  : app.grants.contacts === "allowed"
-                  ? "Contacts Granted"
-                  : "Inject Test Request (Contacts)"}
-              </Button>
-            )}
           </div>
 
           {app.requests.length === 0 ? (
