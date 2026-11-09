@@ -90,20 +90,20 @@
   --font-sans: var(--font-sans, "Inter", system-ui, -apple-system, sans-serif);
   --font-heading: var(--font-heading, "Bebas Neue", sans-serif);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --background: #040812;
-  --foreground: #f1f5f9;
-  --card: #071228;
+  --background: #030712;
+  --foreground: #f8fafc;
+  --card: rgba(6, 15, 34, 0.85);
   --card-foreground: #f8fafc;
-  --popover: #071228;
+  --popover: rgba(6, 15, 34, 0.95);
   --popover-foreground: #f8fafc;
   --primary: #06b6d4;
-  --primary-foreground: #040812;
+  --primary-foreground: #030712;
   --secondary: #0b1a36;
   --secondary-foreground: #e2e8f0;
   --muted: #0b1730;
   --muted-foreground: #94a3b8;
   --accent: #f59e0b;
-  --accent-foreground: #040812;
+  --accent-foreground: #030712;
   --destructive: #ef4444;
   --border: rgba(6, 182, 212, 0.22);
   --input: rgba(6, 182, 212, 0.25);
@@ -117,7 +117,7 @@
   --sidebar: #071228;
   --sidebar-foreground: #f8fafc;
   --sidebar-primary: #06b6d4;
-  --sidebar-primary-foreground: #040812;
+  --sidebar-primary-foreground: #030712;
   --sidebar-accent: #0b1a36;
   --sidebar-accent-foreground: #e2e8f0;
   --sidebar-border: rgba(6, 182, 212, 0.22);
@@ -129,7 +129,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-[#040812] text-foreground font-sans;
+    @apply bg-[#030712] text-foreground font-sans;
   }
   html {
     @apply font-sans;
@@ -140,25 +140,39 @@
   }
 }
 
-/* Stark HUD Theme Custom Styling */
+/* Pure CSS Dark Navy-to-Black Gradient Background with Faint Grid & Soft Radial Glows */
 .stark-grid {
-  background-color: #040812;
+  background-color: #020611;
   background-image: 
-    linear-gradient(to right, rgba(6, 182, 212, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(6, 182, 212, 0.04) 1px, transparent 1px);
-  background-size: 32px 32px;
+    /* Soft cyan radial glow centered at top-center behind main content */
+    radial-gradient(ellipse 900px 500px at 50% 18%, rgba(6, 182, 212, 0.08) 0%, transparent 70%),
+    /* Soft dark red / crimson radial glow behind side panel content */
+    radial-gradient(ellipse 700px 450px at 80% 60%, rgba(220, 38, 38, 0.05) 0%, transparent 65%),
+    /* Very faint cyan grid pattern */
+    linear-gradient(to right, rgba(6, 182, 212, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(6, 182, 212, 0.035) 1px, transparent 1px),
+    /* Deep navy to pitch black gradient */
+    linear-gradient(180deg, #071429 0%, #030712 50%, #01040a 100%);
+  background-size: 
+    auto,
+    auto,
+    32px 32px,
+    32px 32px,
+    auto;
+  background-attachment: fixed;
 }
 
+/* Semi-Opaque Dark Cards (85% Opacity) with Subtle Cyan Borders for High-Contrast Projection */
 .hud-panel {
-  background: rgba(7, 18, 40, 0.88);
-  border: 1px solid rgba(6, 182, 212, 0.24);
-  box-shadow: 0 0 16px -4px rgba(6, 182, 212, 0.14), inset 0 0 14px -6px rgba(6, 182, 212, 0.06);
-  backdrop-filter: blur(10px);
+  background: rgba(6, 15, 34, 0.85);
+  border: 1px solid rgba(6, 182, 212, 0.22);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5), 0 0 16px -4px rgba(6, 182, 212, 0.12), inset 0 0 14px -6px rgba(6, 182, 212, 0.05);
+  backdrop-filter: blur(12px);
 }
 
 .hud-panel:hover {
-  border-color: rgba(6, 182, 212, 0.4);
-  box-shadow: 0 0 20px -2px rgba(6, 182, 212, 0.2), inset 0 0 16px -4px rgba(6, 182, 212, 0.08);
+  border-color: rgba(6, 182, 212, 0.38);
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.6), 0 0 20px -2px rgba(6, 182, 212, 0.18), inset 0 0 16px -4px rgba(6, 182, 212, 0.08);
 }
 
 .hud-ring-glow {

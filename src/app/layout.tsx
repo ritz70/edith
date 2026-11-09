@@ -35,7 +35,7 @@ export default function RootLayout({
       lang="en"
       className={`dark h-full antialiased ${bebasNeue.variable} ${inter.variable}`}
     >
-      <body className="min-h-full flex flex-col bg-[#040812] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+      <body className="min-h-full flex flex-col bg-[#030712] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
         {children}
       </body>
     </html>

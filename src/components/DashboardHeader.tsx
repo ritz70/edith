@@ -28,7 +28,7 @@ export function DashboardHeader() {
   } = useSimulationStore();
 
   return (
-    <header className="border-b border-cyan-500/25 bg-[#040812]/90 backdrop-blur-md sticky top-0 z-30 px-6 py-3.5 shadow-lg shadow-cyan-950/20">
+    <header className="border-b border-cyan-500/20 bg-[#030712]/85 backdrop-blur-md sticky top-0 z-30 px-6 py-3.5 shadow-lg shadow-black/40">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Title & Branding */}
         <div className="flex items-center gap-3">
