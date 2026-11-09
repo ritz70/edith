@@ -151,41 +151,7 @@ npm run start
 
 ---
 
-## 6. Live Hackathon Demo Script (3-Minute Walkthrough)
-
-Follow this exact script during judging:
-
-1. **Initial Baseline State (0:00 – 0:30)**:
-   - Point out the 3 monitored apps: **PhotoMagic** (Photo Editor), **NoteNest** (Productivity), and **FitPulse** (Fitness Tracker).
-   - Point out that all three start in **Trusted** status with a score of **100/100**.
-   - Show the **Live Access Feed** on the right streaming legitimate, baseline data requests in green (e.g. FitPulse syncing GPS route, PhotoMagic saving images).
-2. **Trigger Suspicious Behavior (0:30 – 1:15)**:
-   - Click the prominent red **"Simulate suspicious behaviour"** button in the header.
-   - Observe FitPulse: its access frequency instantly jumps **$6\times$** baseline.
-   - Watch the Live Access Feed light up with high-frequency requests.
-   - Watch FitPulse's trust score ring visibly degrade: `100` $\rightarrow$ `75` (**Caution**, Amber) $\rightarrow$ `65` $\rightarrow$ `55` $\rightarrow$ `41` (**High Risk**, Red).
-   - Click FitPulse to open the **App Detail Sheet** and point to the **Explainable Deductions**:
-     - *Frequency Anomaly (-25 pts)*: Access rate is $6\times$ normal baseline.
-     - *Pending Unjustified Request (-6 pts each)*: Staged requests injected at ticks +3 (Contacts), +6 (Microphone), +9 (SMS).
-     - *Unauthorized Access Attempts (-15 pts)*: FitPulse attempts to read contacts every other tick, blocked as `not_granted`.
-3. **Review Alerts & Recommendations (1:15 – 2:00)**:
-   - Show the **Security Alerts Panel**: 4 distinct alert categories fired with no spam (15-tick cooldown).
-   - Show the **Recommended Actions Panel**: Plain-English mitigations automatically derived:
-     - *"Deny Contacts"* (unjustified request).
-     - *"Restrict Health Data"* (mitigate frequency anomaly).
-     - *"Suspend FitPulse"* (score dropped into High Risk $< 40$).
-4. **Apply Remediation & Verify Recovery (2:00 – 2:30)**:
-   - Click **"Apply"** on the recommendation to suspend FitPulse or restrict its permissions.
-   - Notice the unauthorized access attempts immediately halt in the Live Access Feed.
-   - All pending recommendations disappear as the threat is neutralized.
-   - Click **"History"** in the top navigation to view the full audit log at `/history`: highlight that the applied mitigation is logged with actor `"user"`.
-5. **Reset Demo (2:30 – 3:00)**:
-   - Click **"Reset demo"** in the header.
-   - The entire simulation restarts cleanly to tick `#0`, Mulberry32 seed is re-initialized, all 3 apps return to 100/100 Trusted, and the feed resets.
-
----
-
-## 7. Future Scope
+## 6. Future Scope
 
 1. **Native OS & Mobile Companion**:
    - Bridge E.D.I.T.H. with Android's Private Compute Core and iOS Screen Time / App Privacy Report APIs to ingest real device sensor logs.
