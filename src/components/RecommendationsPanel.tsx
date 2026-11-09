@@ -6,7 +6,7 @@ import { Recommendation } from "@/lib/types";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, CheckCircle2, ArrowRight, ShieldAlert } from "lucide-react";
+import { Sparkles, CheckCircle2, ArrowRight } from "lucide-react";
 
 export function RecommendationsPanel() {
   const {

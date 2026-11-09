@@ -19,7 +19,6 @@ import {
   Ban,
   RotateCw,
   Clock,
-  ShieldOff,
   Sparkles,
   ArrowRight,
 } from "lucide-react";

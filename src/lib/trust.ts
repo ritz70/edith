@@ -46,7 +46,7 @@ export function computeTrust(
   // -3 each, cap -9. (Evaluated once tick >= 10 to give initial access attempts time to register)
   if (tick >= SHORT_WINDOW) {
     const grantedPerms = Object.entries(app.grants)
-      .filter(([_, status]) => status === "allowed" || status === "restricted")
+      .filter(([, status]) => status === "allowed" || status === "restricted")
       .map(([id]) => id);
 
     const unusedPerms = grantedPerms.filter((permId) => {

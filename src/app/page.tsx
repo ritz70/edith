@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { useSimulationStore } from "@/lib/store";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { AppCards } from "@/components/AppCards";
@@ -9,12 +9,17 @@ import { LiveAccessFeed } from "@/components/LiveAccessFeed";
 import { AlertsPanel } from "@/components/AlertsPanel";
 import { AppDetailSheet } from "@/components/AppDetailSheet";
 
+const emptySubscribe = () => () => {};
+
 export default function DashboardPage() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const { isRunning, start, step } = useSimulationStore();
 
   useEffect(() => {
-    setMounted(true);
     start();
   }, [start]);
 

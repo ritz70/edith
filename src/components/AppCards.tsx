@@ -135,7 +135,7 @@ function TrustSparkline({
   );
 }
 
-function getLevelBadge(level: TrustLevel, score: number) {
+function getLevelBadge(level: TrustLevel) {
   switch (level) {
     case "trusted":
       return {
@@ -230,7 +230,7 @@ export function AppCards() {
 
           // Compute real dynamic trust score
           const trust = computeTrust(app, events, tick, permissions);
-          const levelInfo = getLevelBadge(trust.level, trust.score);
+          const levelInfo = getLevelBadge(trust.level);
           const LevelIcon = levelInfo.icon;
           const topDeduction = trust.deductions[0];
           const isSelected = selectedAppId === app.id;
@@ -333,7 +333,7 @@ export function AppCards() {
                       Permission Grants ({grantEntries.length}):
                     </span>
                     <span className="text-[10px] text-slate-400">
-                      {grantEntries.filter(([_, s]) => s === "allowed").length}{" "}
+                      {grantEntries.filter(([, s]) => s === "allowed").length}{" "}
                       active
                     </span>
                   </div>

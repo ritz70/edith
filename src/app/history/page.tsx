@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useSimulationStore } from "@/lib/store";
-import { AuditKind, AuditActor } from "@/lib/types";
+import { AuditKind } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -23,8 +23,14 @@ import {
   RotateCcw,
 } from "lucide-react";
 
+const emptySubscribe = () => () => {};
+
 export default function HistoryPage() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const { auditLog, tick, time, apps, isRunning, step } = useSimulationStore();
 
   const [selectedApp, setSelectedApp] = useState<string>("all");
@@ -33,10 +39,6 @@ export default function HistoryPage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const pageSize = 50;
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Continue running simulation tick while in history page if it was running
   useEffect(() => {
@@ -365,7 +367,19 @@ export default function HistoryPage() {
                       colSpan={5}
                       className="py-12 text-center text-slate-500 font-mono"
                     >
-                      No audit entries match the current filter criteria.
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <Activity className="h-6 w-6 text-slate-600 animate-pulse" />
+                        <span className="text-slate-300 font-medium font-sans">
+                          {auditLog.length === 0
+                            ? "No Activity Recorded Yet"
+                            : "No Matching Audit Records Found"}
+                        </span>
+                        <span className="text-[11px] text-slate-400 font-sans max-w-sm">
+                          {auditLog.length === 0
+                            ? "Start or advance the simulation to stream data access, alert triggers, and permission changes into the ledger."
+                            : "No log entries match the selected filters. Adjust your search or filter selections to view records."}
+                        </span>
+                      </div>
                     </td>
                   </tr>
                 ) : (

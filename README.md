@@ -1,116 +1,210 @@
 # E.D.I.T.H. — Enhanced Digital Identity, Trust & Heuristics
 **Hackathon Prototype for NITSHACKS 9.0 (Software Track)**
 
-> **Trust is checked continuously, not just at install time.**
+> *"Trust is checked continuously, not just at install time."*
 
-E.D.I.T.H. is a real-time permission-management dashboard that continuously monitors how simulated apps access sensitive user data, detects behavioral anomalies, calculates an explainable trust score, surfaces rule-derived security recommendations, and enforces fine-grained access control with an immutable audit log.
-
----
-
-## Key Features
-
-1. **Continuous Simulation Engine**
-   - Pure function simulation advancing deterministic ticks (1 tick = 1 simulated minute).
-   - Seeded mulberry32 PRNG for fully repeatable demonstrations.
-   - Monitors 3 simulated applications: PhotoMagic, NoteNest, and FitPulse.
-
-2. **Explainable Rule-Based Trust Engine (SPEC §7)**
-   - Dynamic score from 0–100 with clear deduction breakdowns:
-     - **Unused permissions**: granted but dormant in long rolling window (-3 pts each, cap -9).
-     - **Unjustified sensitive permissions**: granted sensitive permissions outside app scope (-10 pts each, cap -30).
-     - **Frequency anomalies**: $\ge 3\times$ baseline (-15 pts) or $\ge 5\times$ baseline (-25 pts).
-     - **Unauthorized access attempts**: attempts to access ungranted permissions (-4 pts each, cap -20).
-     - **Pending unjustified requests**: (-6 pts each, cap -18).
-   - Visual color-coded trust levels:
-     - **Trusted** ($\ge 80$, Emerald)
-     - **Caution** ($50–79$, Amber)
-     - **High Risk** ($< 50$, Rose)
-     - **Suspended** (Slate)
-
-3. **Active Access Control & Policy Enforcement (SPEC §6)**
-   - **Allowed**: accesses succeed normally.
-   - **Restricted**: rate-limited to at most 1 access per 10 ticks.
-   - **Revoked**: all access attempts blocked immediately.
-   - **Suspended**: entire application frozen; zero events generated.
-   - **Pending Requests**: Approve or Deny inline.
-   - Blocks from user decisions *never* penalize trust; only unauthorized attempts (`not_granted`) do.
-
-4. **Security Recommendations with One-Click "Apply" (SPEC §9)**
-   - Deny unjustified pending requests.
-   - Revoke sensitive unjustified grants.
-   - Restrict dormant permissions.
-   - Restrict high-frequency anomalous permissions.
-   - Suspend critical risk applications ($< 40$).
-   - All applied recommendations log an immutable audit entry with actor `"user"`.
-
-5. **"Simulate Suspicious Behaviour" Demo Scenario (SPEC §10)**
-   - Single-click demonstration affecting FitPulse:
-     - Immediate $6\times$ access burst.
-     - Tick $+3$: staged request for Contacts.
-     - Tick $+6$: staged request for Microphone.
-     - Tick $+9$: staged request for SMS.
-     - From Tick $+3$ onward: unauthorized access attempts to Contacts every other tick.
-     - Trust score rapidly drops into Caution / High Risk, triggering security alerts.
-   - "Reset demo" button restores original baseline seed state instantly.
-
-6. **Activity History & Audit Trail (SPEC §11)**
-   - Full audit table at `/history` tracking every access, alert, permission change, and simulation event.
-   - Filterable by Application, Event Kind, and Actor (`user` vs `system`), with full-text search.
+E.D.I.T.H. is a real-time, client-side permission-management dashboard that continuously monitors how third-party applications use sensitive user data, detects behavioral anomalies, calculates an explainable trust score, surfaces rule-derived security recommendations, and enforces fine-grained access control with an immutable audit log.
 
 ---
 
-## Tech Stack
+## 1. The Problem E.D.I.T.H. Solves
 
-- **Framework**: Next.js 16 (App Router, TypeScript)
-- **Styling**: Tailwind CSS, tw-animate-css (Dark security-dashboard theme)
-- **UI Components**: shadcn/ui, Lucide Icons
-- **Data Visualization**: Recharts (historical score chart) & Custom SVG (circular rings and sparklines)
-- **State Management**: Zustand (100% client-side, zero backend / zero API keys)
+Modern operating systems and mobile platforms suffer from the **Install-Time Trust Fallacy**:
+- **One-and-Done Permissions**: Users grant sensitive permissions (location, camera, contacts, microphone) once during installation or first launch. Once granted, applications retain permanent, unrestricted background access.
+- **Permission Creep & Stealth Harvesting**: Legitimate applications frequently push updates or activate background routines that quietly access sensors and personal data at rates far beyond what their core functionality requires.
+- **Dormant Permissions as Attack Surfaces**: Forgotten apps maintain dormant access to sensitive APIs, exposing users to supply-chain attacks and SDK hijackings.
+- **Black-Box Security Ratings**: Existing privacy dashboards show raw access counters without context or explainability. Users cannot tell whether 50 location accesses by a workout app is normal or malicious.
+
+**E.D.I.T.H. transforms passive permissions into continuous, heuristic-driven zero-trust monitoring**:
+1. Every access attempt is evaluated against justified app baselines.
+2. Trust scores are fully transparent, mathematical, and explainable.
+3. Behavioral anomalies automatically trigger actionable, one-click mitigations.
 
 ---
 
-## Getting Started
+## 2. Core Capabilities
+
+- **Continuous Simulation Engine**: Deterministic tick engine advancing simulated time (1 tick = 1 minute) driven by a seeded PRNG (`mulberry32`) for fully reproducible demonstrations.
+- **Explainable Trust Score**: Every deduction provides a human-readable reason, exact point penalty, and rolling window calculation. Scores recover dynamically when behavior normalizes or mitigations are applied.
+- **Fine-Grained Access Enforcement**:
+  - `allowed`: Access proceeds normally within baseline.
+  - `restricted`: Rate-limited to at most 1 access per 10 ticks.
+  - `revoked`: Immediate block on all access attempts.
+  - `suspended`: Application completely frozen; generates zero events.
+  - *Golden Rule*: Access blocks caused by user policy choices (restricted, revoked, suspended) **never** lower trust; only unauthorized attempts (`not_granted`) do.
+- **Actionable Recommendations**: Policy engine generates context-specific mitigations with one-click **Apply** buttons that execute the exact store action and record user actor logs.
+- **Full Audit Trail & Search**: Immutable event log tracking every access, policy change, alert, and simulation event at `/history`.
+
+---
+
+## 3. Trust Score Calculation & Heuristics
+
+The E.D.I.T.H. Trust Score is computed deterministically for each application on a scale from **0 to 100**:
+
+$$\text{Trust Score} = \max\left(0, \min\left(100, 100 - \sum \text{Deductions}\right)\right)$$
+
+### Deduction Formula Table
+
+| Factor | Trigger Condition | Points Deducted | Maximum Cap | Evaluation Window | Rationale |
+|---|---|:---:|:---:|:---:|---|
+| **Unused Permission** | Granted (`allowed` or `restricted`), but zero access attempts observed. | **-3 pts** per permission | **-9 pts** | `LONG_WINDOW` (60 ticks, evaluated after tick $\ge 10$) | Dormant permissions represent unnecessary attack surfaces and violate the principle of least privilege. |
+| **Unjustified Sensitive Permission** | Holds grant for High or Critical sensitivity permission not in app's stated `justified` scope. | **-10 pts** per permission | **-30 pts** | Current State | Apps holding permissions outside their functional purpose (e.g., photo editor holding contacts). |
+| **Frequency Anomaly (Moderate)** | Recent access rate $\ge 3\times$ above the app's established baseline. | **-15 pts** | **-25 pts** (combined) | `SHORT_WINDOW` (10 ticks) | Abnormal burst in data harvesting indicating potential compromise or aggressive background scraping. |
+| **Frequency Anomaly (Severe)** | Recent access rate $\ge 5\times$ above the app's established baseline. | **-25 pts** | **-25 pts** (combined) | `SHORT_WINDOW` (10 ticks) | Critical throughput anomaly far exceeding any normal operational burst. |
+| **Unauthorized Access Attempt** | Access attempt blocked due to missing grant (`not_granted`). | **-4 pts** per attempt | **-20 pts** | `LONG_WINDOW` (60 ticks) | Direct attempt to harvest unauthorized data APIs without user consent. |
+| **Pending Unjustified Request** | App requests a new permission that is outside its declared functional scope. | **-6 pts** per request | **-18 pts** | Current State | Proactively penalizes permission creep before the user makes a grant decision. |
+
+### Visual Trust Levels
+
+| Trust Level | Score Range | Color Badge | System Meaning |
+|---|:---:|:---:|---|
+| **Trusted** | **80 – 100** | Emerald Green | Normal operational baseline; all permissions justified. |
+| **Caution** | **50 – 79** | Amber Yellow | Moderate risk detected: frequency anomaly, unjustified request, or dormant access. |
+| **High Risk** | **0 – 49** | Rose Red | Critical threat: unauthorized access attempts, severe burst, or multiple unjustified grants. |
+| **Suspended** | — | Slate Gray | App access frozen by user; no events generated until reinstated. |
+
+*Note: Because scoring uses rolling windows (`SHORT_WINDOW = 10`, `LONG_WINDOW = 60`), scores automatically recover when anomalous behavior ceases or when the user applies corrective recommendations.*
+
+---
+
+## 4. Architecture Overview
+
+E.D.I.T.H. is built with a **100% client-side architecture** with zero external backend dependencies, zero databases, and zero API keys.
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                        Zustand Simulation Store                        │
+│  - apps, permissions, events (last 1000), auditLog, trustSnapshots    │
+│  - tick, time, isRunning, demoSuspiciousActive, alertCooldowns         │
+└──────────────────────────────────┬─────────────────────────────────────┘
+                                   │
+              ┌────────────────────┴────────────────────┐
+              ▼                                         ▼
+   ┌──────────────────────┐                  ┌──────────────────────┐
+   │ pure tick() reducer  │                  │  Access Control &    │
+   │ - mulberry32 PRNG    │                  │  Policy Dispatcher   │
+   │ - Staged demo events │                  │  (User / System)     │
+   └──────────┬───────────┘                  └──────────┬───────────┘
+              │                                         │
+              ▼                                         ▼
+   ┌──────────────────────┐                  ┌──────────────────────┐
+   │ trust.ts Engine      │                  │ alerts.ts (15-tick   │
+   │ - Compute deductions │                  │ cooldown evaluator)  │
+   │ - Rolling windows    │                  └──────────┬───────────┘
+   └──────────┬───────────┘                             │
+              │                                         ▼
+              ▼                              ┌──────────────────────┐
+   ┌──────────────────────┐                  │ recommendations.ts   │
+   │ Reactive UI Layer    │                  │ - Rule-derived recs  │
+   │ - AppCards & Rings   │◀─────────────────│ - One-click Apply    │
+   │ - Live Access Feed   │                  └──────────────────────┘
+   │ - App Detail Sheet   │
+   │ - Activity History   │
+   └──────────────────────┘
+```
+
+### Key Modules
+- **`src/lib/simulator.ts`**: Pure function `tick(state, rng)` that advances the simulation clock, generates stochastic access attempts from baseline probabilities, applies policy enforcement, evaluates alerts, and logs audit events.
+- **`src/lib/trust.ts`**: Mathematical, explainable trust calculation engine computing itemized deduction objects `{ label, points, detail }`.
+- **`src/lib/alerts.ts`**: Evaluates security alerts with a strict 15-tick per `(appId, alertType)` cooldown to eliminate alert fatigue.
+- **`src/lib/recommendations.ts`**: Derives deterministic, rule-based recommendations from live state with direct store actions.
+- **`src/lib/store.ts`**: Central Zustand store providing state hydration, control dispatches, and reset restoration.
+
+---
+
+## 5. Getting Started
 
 ### Prerequisites
-- Node.js 18+ (tested on Node 24)
+- **Node.js**: v18.18+ or v20+ (tested on Node.js 24)
+- **npm** / **pnpm** / **yarn**
 
-### Development
+### Installation & Run
+
 ```bash
+# 1. Clone repository
+git clone https://github.com/your-username/edith.git
+cd edith
+
+# 2. Install dependencies
 npm install
-npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
-Open [http://localhost:3000/history](http://localhost:3000/history) to view the full activity audit trail.
 
-### Production Build
+# 3. Start development server
+npm run dev
+
+# 4. Open browser
+# Dashboard: http://localhost:3000
+# Full Audit History: http://localhost:3000/history
+```
+
+### Production Build & Verification
+
 ```bash
+# Verify ESLint code quality (0 errors, 0 warnings)
+npm run lint
+
+# Production compilation & static generation
 npm run build
+
+# Start production server
 npm run start
 ```
 
 ---
 
-## Project Structure
+## 6. Live Hackathon Demo Script (3-Minute Walkthrough)
 
-```
-src/
-├── app/
-│   ├── page.tsx               # Main Dashboard view
-│   ├── history/page.tsx       # Activity History & Audit Log
-│   ├── layout.tsx             # Root Layout (Dark theme)
-│   └── globals.css            # Global theme styles
-├── components/
-│   ├── DashboardHeader.tsx    # Clock, controls, demo scenario button
-│   ├── AppCards.tsx           # Monitored app cards, score rings, sparklines
-│   ├── LiveAccessFeed.tsx     # Real-time event stream & block indicators
-│   ├── AlertsPanel.tsx        # High-severity alert notices
-│   └── AppDetailSheet.tsx     # Side-over: controls, chart, deductions, recommendations
-└── lib/
-    ├── types.ts               # Core domain models
-    ├── seed.ts                # Permission catalog & initial apps
-    ├── simulator.ts           # Pure simulation tick engine & PRNG
-    ├── trust.ts               # Heuristic trust computation engine
-    ├── alerts.ts              # Alert evaluation & 15-tick cooldown logic
-    ├── recommendations.ts     # Actionable recommendation heuristics
-    └── store.ts               # Zustand simulation store
-```
+Follow this exact script during judging:
+
+1. **Initial Baseline State (0:00 – 0:30)**:
+   - Point out the 3 monitored apps: **PhotoMagic** (Photo Editor), **NoteNest** (Productivity), and **FitPulse** (Fitness Tracker).
+   - Point out that all three start in **Trusted** status with a score of **100/100**.
+   - Show the **Live Access Feed** on the right streaming legitimate, baseline data requests in green (e.g. FitPulse syncing GPS route, PhotoMagic saving images).
+2. **Trigger Suspicious Behavior (0:30 – 1:15)**:
+   - Click the prominent red **"Simulate suspicious behaviour"** button in the header.
+   - Observe FitPulse: its access frequency instantly jumps **$6\times$** baseline.
+   - Watch the Live Access Feed light up with high-frequency requests.
+   - Watch FitPulse's trust score ring visibly degrade: `100` $\rightarrow$ `75` (**Caution**, Amber) $\rightarrow$ `65` $\rightarrow$ `55` $\rightarrow$ `41` (**High Risk**, Red).
+   - Click FitPulse to open the **App Detail Sheet** and point to the **Explainable Deductions**:
+     - *Frequency Anomaly (-25 pts)*: Access rate is $6\times$ normal baseline.
+     - *Pending Unjustified Request (-6 pts each)*: Staged requests injected at ticks +3 (Contacts), +6 (Microphone), +9 (SMS).
+     - *Unauthorized Access Attempts (-15 pts)*: FitPulse attempts to read contacts every other tick, blocked as `not_granted`.
+3. **Review Alerts & Recommendations (1:15 – 2:00)**:
+   - Show the **Security Alerts Panel**: 4 distinct alert categories fired with no spam (15-tick cooldown).
+   - Show the **Recommended Actions Panel**: Plain-English mitigations automatically derived:
+     - *"Deny Contacts"* (unjustified request).
+     - *"Restrict Health Data"* (mitigate frequency anomaly).
+     - *"Suspend FitPulse"* (score dropped into High Risk $< 40$).
+4. **Apply Remediation & Verify Recovery (2:00 – 2:30)**:
+   - Click **"Apply"** on the recommendation to suspend FitPulse or restrict its permissions.
+   - Notice the unauthorized access attempts immediately halt in the Live Access Feed.
+   - All pending recommendations disappear as the threat is neutralized.
+   - Click **"History"** in the top navigation to view the full audit log at `/history`: highlight that the applied mitigation is logged with actor `"user"`.
+5. **Reset Demo (2:30 – 3:00)**:
+   - Click **"Reset demo"** in the header.
+   - The entire simulation restarts cleanly to tick `#0`, Mulberry32 seed is re-initialized, all 3 apps return to 100/100 Trusted, and the feed resets.
+
+---
+
+## 7. Future Scope
+
+1. **Native OS & Mobile Companion**:
+   - Bridge E.D.I.T.H. with Android's Private Compute Core and iOS Screen Time / App Privacy Report APIs to ingest real device sensor logs.
+   - Native Flutter/React Native mobile companion delivering real-time biometric push notifications when apps make background queries.
+2. **Learned Behavioral Baselines (On-Device ML)**:
+   - Replace static baseline configuration with unsupervised on-device anomaly detection (e.g., local Isolation Forests or lightweight clustering).
+   - Dynamically adapt to personal usage routines (e.g., higher GPS baseline during morning runs, zero tolerance at night).
+3. **Enterprise Zero-Trust & Shadow-IT Audit**:
+   - Deploy E.D.I.T.H. as an endpoint agent across corporate fleets to audit desktop SaaS apps, Electron wrappers, and browser extensions accessing clipboard, camera, and local storage.
+4. **Automated DPDP Act (India, 2023) Compliance Reports**:
+   - Provide one-click downloadable compliance exports mapped to the **Digital Personal Data Protection Act, 2023**:
+     - **Purpose Limitation (§6)**: Proof that data collected strictly matches declared notice.
+     - **Consent Lifecycle (§7)**: Cryptographically verified audit log of consent grant, restriction, and revocation.
+     - **Data Minimization & Erasure (§8)**: Automatic flagging and restriction of dormant permissions.
+5. **Decentralized Reputation Network**:
+   - Opt-in anonymized aggregation of app behavioral scores to establish a global, crowd-sourced trust intelligence registry for developers and privacy auditors.
+
+---
+
+## License
+
+MIT License. Developed for NITSHACKS 9.0 Software Track.

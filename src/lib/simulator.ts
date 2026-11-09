@@ -64,7 +64,7 @@ export function tick(
   // --- SPEC §10: Handle demo scenario staged requests ---
   // Deep clone apps so we can mutate for staged request injection this tick
   let appsThisTick = state.apps;
-  let demoInjected = state.demoInjectedRequests ? [...state.demoInjectedRequests] : [];
+  const demoInjected = state.demoInjectedRequests ? [...state.demoInjectedRequests] : [];
 
   if (state.demoSuspiciousActive && state.demoStartTick !== undefined) {
     const elapsed = nextTick - state.demoStartTick;
