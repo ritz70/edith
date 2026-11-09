@@ -6,6 +6,8 @@ import { useSimulationStore } from "@/lib/store";
 import { AuditKind } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { HudCursor } from "@/components/HudCursor";
+import { HudAmbient } from "@/components/HudAmbient";
 import {
   Shield,
   ArrowLeft,
@@ -134,7 +136,9 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="min-h-screen stark-grid text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen stark-grid text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative">
+      <HudCursor />
+      <HudAmbient />
       {/* Top Header */}
       <header className="border-b border-cyan-500/20 bg-[#030712]/85 backdrop-blur-md sticky top-0 z-30 px-6 py-4 shadow-lg shadow-black/40">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">

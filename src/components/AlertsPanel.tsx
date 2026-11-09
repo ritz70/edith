@@ -40,7 +40,7 @@ export function AlertsPanel() {
   const alertList = alerts.slice(0, 15);
 
   return (
-    <Card className="hud-panel shadow-lg shadow-black/30">
+    <Card className="hud-panel hud-corner-bracket shadow-lg shadow-black/30">
       <CardHeader className="pb-3 pt-4 px-5 border-b border-cyan-500/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">

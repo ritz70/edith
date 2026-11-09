@@ -56,7 +56,7 @@ function TrustScoreRing({
   }
 
   return (
-    <div className="relative flex items-center justify-center shrink-0 w-16 h-16 drop-shadow-[0_0_10px_rgba(6,182,212,0.35)]">
+    <div className="relative flex items-center justify-center shrink-0 w-16 h-16 drop-shadow-[0_0_12px_rgba(6,182,212,0.4)]">
       <svg height={radius * 2} width={radius * 2} className="rotate-[-90deg]">
         <circle
           stroke="currentColor"
@@ -79,6 +79,11 @@ function TrustScoreRing({
           cy={radius}
           className={`${strokeColor} transition-all duration-500 ease-out`}
         />
+        {/* Arc Reactor Telemetry Pips */}
+        <circle cx={radius} cy={stroke + 1} r="1.5" className="fill-cyan-400/80" />
+        <circle cx={radius} cy={radius * 2 - stroke - 1} r="1.5" className="fill-cyan-400/80" />
+        <circle cx={stroke + 1} cy={radius} r="1.5" className="fill-cyan-400/80" />
+        <circle cx={radius * 2 - stroke - 1} cy={radius} r="1.5" className="fill-cyan-400/80" />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
         <span className="text-sm font-bold text-white tracking-tight leading-none font-mono">
@@ -248,10 +253,10 @@ export function AppCards() {
             <Card
               key={app.id}
               onClick={() => selectApp(app.id)}
-              className={`hud-panel transition-all duration-200 cursor-pointer group ${
+              className={`hud-panel hud-corner-bracket transition-all duration-200 cursor-pointer group hover:-translate-y-0.5 ${
                 isSelected
-                  ? "border-cyan-400 ring-1 ring-cyan-400/50 shadow-[0_0_20px_rgba(6,182,212,0.25)]"
-                  : "hover:border-cyan-400/60"
+                  ? "border-cyan-400 ring-1 ring-cyan-400/50 shadow-[0_0_24px_rgba(6,182,212,0.3)]"
+                  : "hover:border-cyan-400/70"
               }`}
             >
               <CardHeader className="pb-2 pt-4 px-5">

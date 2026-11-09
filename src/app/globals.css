@@ -178,3 +178,42 @@
 .hud-ring-glow {
   filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.45));
 }
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(120vh);
+  }
+}
+
+.animate-scanline {
+  animation: scanline 10s linear infinite;
+}
+
+.hud-corner-bracket {
+  position: relative;
+}
+.hud-corner-bracket::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid rgba(6, 182, 212, 0.6);
+  border-left: 2px solid rgba(6, 182, 212, 0.6);
+  pointer-events: none;
+}
+.hud-corner-bracket::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  border-bottom: 2px solid rgba(6, 182, 212, 0.6);
+  border-right: 2px solid rgba(6, 182, 212, 0.6);
+  pointer-events: none;
+}

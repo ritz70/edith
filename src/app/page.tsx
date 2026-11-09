@@ -8,6 +8,8 @@ import { RecommendationsPanel } from "@/components/RecommendationsPanel";
 import { LiveAccessFeed } from "@/components/LiveAccessFeed";
 import { AlertsPanel } from "@/components/AlertsPanel";
 import { AppDetailSheet } from "@/components/AppDetailSheet";
+import { HudCursor } from "@/components/HudCursor";
+import { HudAmbient } from "@/components/HudAmbient";
 
 const emptySubscribe = () => () => {};
 
@@ -45,7 +47,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen stark-grid text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen stark-grid text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative">
+      <HudCursor />
+      <HudAmbient />
       <DashboardHeader />
 
       <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">

@@ -48,7 +48,7 @@ export function RecommendationsPanel() {
   return (
     <Card
       data-slot="recommendations-panel"
-      className="hud-panel shadow-lg shadow-black/30"
+      className="hud-panel hud-corner-bracket shadow-lg shadow-black/30"
     >
       <CardHeader className="pb-3 pt-4 px-5 border-b border-cyan-500/20">
         <div className="flex items-center justify-between">

@@ -20,7 +20,7 @@ export function LiveAccessFeed() {
   const allowedCount = totalEvents - blockedCount;
 
   return (
-    <Card className="hud-panel flex flex-col h-full shadow-lg shadow-black/30">
+    <Card className="hud-panel hud-corner-bracket flex flex-col h-full shadow-lg shadow-black/30">
       <CardHeader className="pb-3 pt-4 px-5 border-b border-cyan-500/20">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="flex items-center gap-2.5">
