@@ -1,31 +1,46 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export function HudCursor() {
-  const [pos, setPos] = useState<{ x: number; y: number }>({ x: -100, y: -100 });
-  const [hoverState, setHoverState] = useState<"default" | "cyan" | "gold" | "red">("default");
-  const [isClicking, setIsClicking] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const trailingPos = useRef<{ x: number; y: number }>({ x: -100, y: -100 });
-  const [renderTrailing, setRenderTrailing] = useState<{ x: number; y: number }>({
-    x: -100,
-    y: -100,
-  });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    // Only activate on devices with fine pointer (mouse/trackpad)
+    // Check if fine pointer device
     if (typeof window === "undefined" || !window.matchMedia("(pointer: fine)").matches) {
       return;
     }
 
+    const container = containerRef.current;
+    const ring = ringRef.current;
+    const dot = dotRef.current;
+    const label = labelRef.current;
+    if (!container || !ring || !dot || !label) return;
+
+    let targetX = -100;
+    let targetY = -100;
+    let ringX = -100;
+    let ringY = -100;
+    let isClicking = false;
+    let isVisible = false;
     let animId: number;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      setIsVisible(true);
-      setPos({ x: e.clientX, y: e.clientY });
+    const onMouseMove = (e: MouseEvent) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
 
-      // Detect hover target
+      if (!isVisible) {
+        isVisible = true;
+        container.style.opacity = "1";
+      }
+
+      // 0ms instant update for primary dot — zero React lag!
+      dot.style.transform = `translate3d(${targetX}px, ${targetY}px, 0)`;
+
+      // Fast target detection without React re-renders
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
@@ -34,7 +49,7 @@ export function HudCursor() {
       );
 
       if (interactive) {
-        const text = interactive.textContent?.toLowerCase() || "";
+        const text = (interactive.textContent || "").toLowerCase();
         const className = interactive.className || "";
 
         if (
@@ -45,133 +60,112 @@ export function HudCursor() {
           className.includes("rose") ||
           className.includes("red")
         ) {
-          setHoverState("red");
+          ring.className =
+            "relative flex items-center justify-center w-8 h-8 -top-4 -left-4 rounded-sm border border-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)] transition-all duration-100 scale-110";
+          label.textContent = "LOCK";
+          label.className = "absolute -right-8 top-0 text-[8px] font-mono font-bold tracking-tighter uppercase text-red-400";
         } else if (
           text.includes("pause") ||
           text.includes("caution") ||
           className.includes("amber")
         ) {
-          setHoverState("gold");
+          ring.className =
+            "relative flex items-center justify-center w-8 h-8 -top-4 -left-4 rounded-sm border border-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.5)] transition-all duration-100 scale-110";
+          label.textContent = "LOCK";
+          label.className = "absolute -right-8 top-0 text-[8px] font-mono font-bold tracking-tighter uppercase text-amber-400";
         } else {
-          setHoverState("cyan");
+          ring.className =
+            "relative flex items-center justify-center w-8 h-8 -top-4 -left-4 rounded-sm border border-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.5)] transition-all duration-100 scale-110";
+          label.textContent = "LOCK";
+          label.className = "absolute -right-8 top-0 text-[8px] font-mono font-bold tracking-tighter uppercase text-cyan-400";
         }
       } else {
-        setHoverState("default");
+        ring.className =
+          "relative flex items-center justify-center w-6 h-6 -top-3 -left-3 rounded-full border border-cyan-500/50 transition-all duration-100 scale-100";
+        label.textContent = "";
+        label.className = "hidden";
       }
     };
 
-    const handleMouseDown = () => setIsClicking(true);
-    const handleMouseUp = () => setIsClicking(false);
-    const handleMouseLeave = () => setIsVisible(false);
-
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    window.addEventListener("mousedown", handleMouseDown);
-    window.addEventListener("mouseup", handleMouseUp);
-    document.documentElement.addEventListener("mouseleave", handleMouseLeave);
-
-    // Smooth trailing lag for the outer target reticle
-    const updateTrailing = () => {
-      trailingPos.current.x += (pos.x - trailingPos.current.x) * 0.25;
-      trailingPos.current.y += (pos.y - trailingPos.current.y) * 0.25;
-      setRenderTrailing({
-        x: Math.round(trailingPos.current.x * 10) / 10,
-        y: Math.round(trailingPos.current.y * 10) / 10,
-      });
-      animId = requestAnimationFrame(updateTrailing);
+    const onMouseDown = () => {
+      isClicking = true;
+      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) scale(0.85)`;
     };
 
-    animId = requestAnimationFrame(updateTrailing);
+    const onMouseUp = () => {
+      isClicking = false;
+      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) scale(1)`;
+    };
+
+    const onMouseLeaveWindow = (e: MouseEvent) => {
+      // Only hide if the mouse genuinely left the browser viewport
+      if (
+        e.clientY <= 0 ||
+        e.clientX <= 0 ||
+        e.clientX >= window.innerWidth ||
+        e.clientY >= window.innerHeight
+      ) {
+        isVisible = false;
+        container.style.opacity = "0";
+      }
+    };
+
+    const onMouseEnterWindow = () => {
+      isVisible = true;
+      container.style.opacity = "1";
+    };
+
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    window.addEventListener("mousedown", onMouseDown, { passive: true });
+    window.addEventListener("mouseup", onMouseUp, { passive: true });
+    document.addEventListener("mouseleave", onMouseLeaveWindow);
+    document.addEventListener("mouseenter", onMouseEnterWindow);
+
+    // Highly responsive 60fps transform loop for outer ring (lerp factor 0.45 for snappy, lag-free feel)
+    const tickLoop = () => {
+      ringX += (targetX - ringX) * 0.45;
+      ringY += (targetY - ringY) * 0.45;
+
+      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) ${
+        isClicking ? "scale(0.85)" : ""
+      }`;
+
+      animId = requestAnimationFrame(tickLoop);
+    };
+
+    animId = requestAnimationFrame(tickLoop);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mousedown", handleMouseDown);
-      window.removeEventListener("mouseup", handleMouseUp);
-      document.documentElement.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mouseup", onMouseUp);
+      document.removeEventListener("mouseleave", onMouseLeaveWindow);
+      document.removeEventListener("mouseenter", onMouseEnterWindow);
       cancelAnimationFrame(animId);
     };
-  }, [pos.x, pos.y]);
-
-  if (!isVisible) return null;
-
-  const isLocked = hoverState !== "default";
-
-  let accentColor = "#06b6d4"; // Cyan
-  let borderColor = "border-cyan-400";
-  let textColor = "text-cyan-400";
-
-  if (hoverState === "red") {
-    accentColor = "#ef4444";
-    borderColor = "border-red-500";
-    textColor = "text-red-400";
-  } else if (hoverState === "gold") {
-    accentColor = "#f59e0b";
-    borderColor = "border-amber-400";
-    textColor = "text-amber-400";
-  }
+  }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden select-none">
-      {/* 1. Fast Primary Center Reticle Dot */}
+    <div
+      ref={containerRef}
+      className="pointer-events-none fixed inset-0 z-[99999] overflow-hidden select-none opacity-0 transition-opacity duration-150"
+    >
+      {/* 1. Fast Primary Center Reticle Dot (0ms lag, direct transform) */}
       <div
-        className="fixed top-0 left-0 transition-transform duration-75 ease-out"
-        style={{
-          transform: `translate3d(${pos.x - 3}px, ${pos.y - 3}px, 0)`,
-        }}
+        ref={dotRef}
+        className="fixed top-0 left-0 w-2 h-2 -ml-1 -mt-1 rounded-full bg-cyan-300 shadow-[0_0_8px_#06b6d4] will-change-transform"
+      />
+
+      {/* 2. Snappy Outer Targeting Reticle */}
+      <div
+        ref={ringRef}
+        className="fixed top-0 left-0 will-change-transform"
       >
-        <div
-          className={`h-1.5 w-1.5 rounded-full ${
-            hoverState === "red"
-              ? "bg-red-400 shadow-[0_0_8px_#ef4444]"
-              : hoverState === "gold"
-              ? "bg-amber-400 shadow-[0_0_8px_#f59e0b]"
-              : "bg-cyan-300 shadow-[0_0_8px_#06b6d4]"
-          }`}
+        <span
+          ref={labelRef}
+          className="hidden"
         />
-      </div>
-
-      {/* 2. Trailing Outer Targeting Box / Ring */}
-      <div
-        className="fixed top-0 left-0 transition-all duration-150 ease-out"
-        style={{
-          transform: `translate3d(${renderTrailing.x - 16}px, ${renderTrailing.y - 16}px, 0)`,
-        }}
-      >
-        <div
-          className={`relative flex items-center justify-center transition-all duration-200 ${
-            isLocked
-              ? `h-8 w-8 scale-125 border ${borderColor} rounded-sm shadow-[0_0_15px_${accentColor}50]`
-              : "h-8 w-8 rounded-full border border-cyan-500/40"
-          } ${isClicking ? "scale-90 opacity-75" : "scale-100 opacity-90"}`}
-        >
-          {/* Tactical Corner Brackets when locked */}
-          {isLocked && (
-            <>
-              <span className={`absolute -top-1 -left-1 h-1.5 w-1.5 border-t border-l ${borderColor}`} />
-              <span className={`absolute -top-1 -right-1 h-1.5 w-1.5 border-t border-r ${borderColor}`} />
-              <span className={`absolute -bottom-1 -left-1 h-1.5 w-1.5 border-b border-l ${borderColor}`} />
-              <span className={`absolute -bottom-1 -right-1 h-1.5 w-1.5 border-b border-r ${borderColor}`} />
-            </>
-          )}
-
-          {/* Crosshair ticks */}
-          {!isLocked && (
-            <>
-              <span className="absolute top-0 h-1 w-px bg-cyan-400/60" />
-              <span className="absolute bottom-0 h-1 w-px bg-cyan-400/60" />
-              <span className="absolute left-0 w-1 h-px bg-cyan-400/60" />
-              <span className="absolute right-0 w-1 h-px bg-cyan-400/60" />
-            </>
-          )}
-
-          {/* Micro Telemetry Readout */}
-          <span
-            className={`absolute -right-12 top-0 text-[8px] font-mono tracking-tighter uppercase ${textColor} opacity-80 whitespace-nowrap`}
-          >
-            {isLocked ? "LOCK" : `${pos.x},${pos.y}`}
-          </span>
-        </div>
       </div>
     </div>
   );
 }
-
