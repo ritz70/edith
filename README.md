@@ -1,7 +1,11 @@
+<p align="center">
+  <img src="public/logo.svg" alt="E.D.I.T.H. Logo" width="84" height="84" />
+</p>
+
 # E.D.I.T.H. — Enhanced Digital Identity, Trust & Heuristics
 **Hackathon Prototype for NITSHACKS 9.0 (Software Track)**
 
-> *"Trust is checked continuously, not just at install time."*
+> *"Trust isn't granted once. It's earned continuously."*
 
 E.D.I.T.H. is a real-time, client-side permission-management dashboard that continuously monitors how third-party applications use sensitive user data, detects behavioral anomalies, calculates an explainable trust score, surfaces rule-derived security recommendations, and enforces fine-grained access control with an immutable audit log.
 

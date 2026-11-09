@@ -1,11 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useSimulationStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Shield,
   Clock,
   Play,
   Pause,
@@ -31,10 +31,15 @@ export function DashboardHeader() {
     <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-30 px-6 py-4">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Title & Branding */}
-        <div className="flex items-center gap-3.5">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-cyan-500/20 via-emerald-500/10 to-transparent border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-inner shadow-cyan-500/20">
-            <Shield className="h-5 w-5" />
-          </div>
+        <div className="flex items-center gap-3">
+          <Image
+            src="/logo.svg"
+            alt="E.D.I.T.H. Logo"
+            width={38}
+            height={38}
+            priority
+            className="h-9 w-9 shrink-0 drop-shadow-[0_0_12px_rgba(16,185,129,0.35)]"
+          />
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold tracking-tight text-white font-mono">
@@ -42,14 +47,13 @@ export function DashboardHeader() {
               </h1>
               <Badge
                 variant="outline"
-                className="bg-cyan-950/60 border-cyan-700/60 text-cyan-400 font-mono text-[10px] tracking-wider uppercase px-2 py-0.5"
+                className="bg-emerald-950/60 border-emerald-700/60 text-emerald-400 font-mono text-[10px] tracking-wider uppercase px-2 py-0.5"
               >
                 Trust Heuristics Core
               </Badge>
             </div>
-            <p className="text-xs text-slate-300 font-sans">
-              Enhanced Digital Identity, Trust &amp; Heuristics — Continuous
-              Permission Monitor
+            <p className="text-xs text-slate-400 font-sans">
+              Trust isn&apos;t granted once. It&apos;s earned continuously.
             </p>
           </div>
         </div>

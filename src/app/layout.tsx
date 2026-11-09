@@ -4,6 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "E.D.I.T.H. — Digital Identity & Trust Simulation",
   description: "Enhanced Digital Identity, Trust & Heuristics",
+  icons: {
+    icon: "/logo.svg",
+    shortcut: "/logo.svg",
+    apple: "/logo.svg",
+  },
 };
 
 export default function RootLayout({
