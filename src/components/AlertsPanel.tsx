@@ -40,15 +40,15 @@ export function AlertsPanel() {
   const alertList = alerts.slice(0, 15);
 
   return (
-    <Card className="bg-slate-900/90 border-slate-800/90 shadow-lg shadow-black/20">
-      <CardHeader className="pb-3 pt-4 px-5 border-b border-slate-800/80">
+    <Card className="hud-panel shadow-lg shadow-black/30">
+      <CardHeader className="pb-3 pt-4 px-5 border-b border-cyan-500/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="h-7 w-7 rounded-lg bg-amber-950/60 border border-amber-800/60 flex items-center justify-center text-amber-400">
+            <div className="h-7 w-7 rounded-lg bg-amber-950/60 border border-amber-500/40 flex items-center justify-center text-amber-400">
               <AlertTriangle className="h-4 w-4" />
             </div>
             <div>
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-white font-mono">
+              <CardTitle className="text-base font-bold uppercase tracking-wider text-white font-heading">
                 Security Alerts ({alerts.length})
               </CardTitle>
               <p className="text-[11px] text-slate-400 font-mono">

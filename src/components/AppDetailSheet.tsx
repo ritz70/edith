@@ -108,12 +108,12 @@ export function AppDetailSheet() {
       />
 
       {/* Side Sheet Panel */}
-      <aside className="w-full max-w-xl h-full bg-slate-950 border-l border-slate-800 text-slate-100 p-6 overflow-y-auto flex flex-col gap-6 shadow-2xl font-mono">
+      <aside className="w-full max-w-xl h-full bg-[#050c1c]/95 border-l border-cyan-500/30 text-slate-100 p-6 overflow-y-auto flex flex-col gap-6 shadow-2xl backdrop-blur-md">
         {/* Header */}
-        <div className="flex items-start justify-between pb-4 border-b border-slate-800">
+        <div className="flex items-start justify-between pb-4 border-b border-cyan-500/20">
           <div className="space-y-1">
             <div className="flex items-center gap-2.5">
-              <h2 className="text-xl font-bold text-white tracking-tight">
+              <h2 className="text-2xl font-bold text-white tracking-wider font-heading">
                 {app.name}
               </h2>
               <Badge

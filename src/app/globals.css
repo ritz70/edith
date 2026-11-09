@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  --font-sans: var(--font-sans, "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif);
   --font-mono: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
-  --font-heading: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  --font-heading: var(--font-heading, "Bebas Neue", sans-serif);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,8 +49,9 @@
 }
 
 :root {
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-sans: var(--font-sans, "Inter", system-ui, -apple-system, sans-serif);
+  --font-heading: var(--font-heading, "Bebas Neue", sans-serif);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -74,7 +75,7 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 0.5rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -86,39 +87,41 @@
 }
 
 .dark {
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --font-sans: var(--font-sans, "Inter", system-ui, -apple-system, sans-serif);
+  --font-heading: var(--font-heading, "Bebas Neue", sans-serif);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --background: #040812;
+  --foreground: #f1f5f9;
+  --card: #071228;
+  --card-foreground: #f8fafc;
+  --popover: #071228;
+  --popover-foreground: #f8fafc;
+  --primary: #06b6d4;
+  --primary-foreground: #040812;
+  --secondary: #0b1a36;
+  --secondary-foreground: #e2e8f0;
+  --muted: #0b1730;
+  --muted-foreground: #94a3b8;
+  --accent: #f59e0b;
+  --accent-foreground: #040812;
+  --destructive: #ef4444;
+  --border: rgba(6, 182, 212, 0.22);
+  --input: rgba(6, 182, 212, 0.25);
+  --ring: #06b6d4;
+  --radius: 0.5rem;
+  --chart-1: #06b6d4;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #6366f1;
+  --sidebar: #071228;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #06b6d4;
+  --sidebar-primary-foreground: #040812;
+  --sidebar-accent: #0b1a36;
+  --sidebar-accent-foreground: #e2e8f0;
+  --sidebar-border: rgba(6, 182, 212, 0.22);
+  --sidebar-ring: #06b6d4;
 }
 
 @layer base {
@@ -126,9 +129,38 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-[#040812] text-foreground font-sans;
   }
   html {
     @apply font-sans;
   }
+  h1, h2, h3, h4, .font-heading {
+    font-family: var(--font-heading, "Bebas Neue", sans-serif);
+    letter-spacing: 0.05em;
+  }
+}
+
+/* Stark HUD Theme Custom Styling */
+.stark-grid {
+  background-color: #040812;
+  background-image: 
+    linear-gradient(to right, rgba(6, 182, 212, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(6, 182, 212, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.hud-panel {
+  background: rgba(7, 18, 40, 0.88);
+  border: 1px solid rgba(6, 182, 212, 0.24);
+  box-shadow: 0 0 16px -4px rgba(6, 182, 212, 0.14), inset 0 0 14px -6px rgba(6, 182, 212, 0.06);
+  backdrop-filter: blur(10px);
+}
+
+.hud-panel:hover {
+  border-color: rgba(6, 182, 212, 0.4);
+  box-shadow: 0 0 20px -2px rgba(6, 182, 212, 0.2), inset 0 0 16px -4px rgba(6, 182, 212, 0.08);
+}
+
+.hud-ring-glow {
+  filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.45));
 }

@@ -82,11 +82,11 @@ export default function HistoryPage() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 p-8 font-mono flex items-center justify-center">
-        <div className="flex items-center gap-3">
+      <div className="min-h-screen stark-grid text-slate-100 p-8 font-mono flex items-center justify-center">
+        <div className="flex items-center gap-3 bg-[#071228]/80 border border-cyan-500/30 px-5 py-3 rounded-lg shadow-lg shadow-cyan-950/40">
           <div className="h-4 w-4 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin" />
-          <p className="text-slate-400 text-sm">
-            Loading E.D.I.T.H. Activity History...
+          <p className="text-cyan-300 text-sm font-mono tracking-wide">
+            Initializing E.D.I.T.H. core...
           </p>
         </div>
       </div>
@@ -134,9 +134,9 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen stark-grid text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
       {/* Top Header */}
-      <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-30 px-6 py-4">
+      <header className="border-b border-cyan-500/20 bg-[#040812]/90 backdrop-blur sticky top-0 z-30 px-6 py-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Link href="/">
@@ -155,11 +155,11 @@ export default function HistoryPage() {
                 <Shield className="h-4.5 w-4.5" />
               </div>
               <div>
-                <h1 className="text-lg font-bold tracking-tight text-white font-mono flex items-center gap-2">
+                <h1 className="text-xl font-bold tracking-wider text-white font-heading flex items-center gap-2">
                   E.D.I.T.H. Activity History
                   <Badge
                     variant="outline"
-                    className="bg-cyan-950/60 border-cyan-700/60 text-cyan-400 font-mono text-[10px] tracking-wider uppercase px-2 py-0.5"
+                    className="bg-amber-950/40 border-amber-500/50 text-amber-300 font-mono text-[10px] tracking-widest uppercase px-2 py-0.5"
                   >
                     Full Audit Log
                   </Badge>

@@ -20,16 +20,16 @@ export function LiveAccessFeed() {
   const allowedCount = totalEvents - blockedCount;
 
   return (
-    <Card className="bg-slate-900/90 border-slate-800/90 flex flex-col h-full shadow-lg shadow-black/20">
-      <CardHeader className="pb-3 pt-4 px-5 border-b border-slate-800/80">
+    <Card className="hud-panel flex flex-col h-full shadow-lg shadow-black/30">
+      <CardHeader className="pb-3 pt-4 px-5 border-b border-cyan-500/20">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-lg bg-cyan-950/60 border border-cyan-800/60 flex items-center justify-center text-cyan-400">
+            <div className="h-8 w-8 rounded-lg bg-cyan-950/60 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
               <Activity className="h-4 w-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <CardTitle className="text-sm font-bold uppercase tracking-wider text-white font-mono">
+                <CardTitle className="text-base font-bold uppercase tracking-wider text-white font-heading">
                   Live Access Feed
                 </CardTitle>
                 <div className="flex items-center gap-1.5">

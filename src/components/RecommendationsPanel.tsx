@@ -48,23 +48,23 @@ export function RecommendationsPanel() {
   return (
     <Card
       data-slot="recommendations-panel"
-      className="bg-slate-900/90 border-slate-800/90 shadow-lg shadow-black/20"
+      className="hud-panel shadow-lg shadow-black/30"
     >
-      <CardHeader className="pb-3 pt-4 px-5 border-b border-slate-800/80">
+      <CardHeader className="pb-3 pt-4 px-5 border-b border-cyan-500/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-lg bg-cyan-950/60 border border-cyan-800/60 flex items-center justify-center text-cyan-400">
+            <div className="h-8 w-8 rounded-lg bg-amber-950/40 border border-amber-500/40 flex items-center justify-center text-amber-400">
               <Sparkles className="h-4 w-4" />
             </div>
             <div>
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-white font-mono flex items-center gap-2">
+              <CardTitle className="text-base font-bold uppercase tracking-wider text-white font-heading flex items-center gap-2">
                 Recommended Actions
                 <Badge
                   variant="outline"
                   className={`text-[10px] font-mono uppercase px-2 py-0.5 tracking-wider font-semibold ${
                     recommendations.length > 0
-                      ? "bg-amber-950/80 border-amber-700/80 text-amber-300"
-                      : "bg-slate-800 text-slate-400 border-slate-700"
+                      ? "bg-amber-950/80 border-amber-500/80 text-amber-300"
+                      : "bg-[#071329] text-slate-400 border-cyan-500/20"
                   }`}
                 >
                   {recommendations.length} Active

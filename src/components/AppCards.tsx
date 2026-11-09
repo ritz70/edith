@@ -56,7 +56,7 @@ function TrustScoreRing({
   }
 
   return (
-    <div className="relative flex items-center justify-center shrink-0 w-16 h-16">
+    <div className="relative flex items-center justify-center shrink-0 w-16 h-16 drop-shadow-[0_0_10px_rgba(6,182,212,0.35)]">
       <svg height={radius * 2} width={radius * 2} className="rotate-[-90deg]">
         <circle
           stroke="currentColor"
@@ -65,7 +65,7 @@ function TrustScoreRing({
           r={normalizedRadius}
           cx={radius}
           cy={radius}
-          className="text-slate-800"
+          className="text-[#0c1e3d]"
         />
         <circle
           stroke="currentColor"
@@ -215,7 +215,7 @@ export function AppCards() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Smartphone className="h-4 w-4 text-cyan-400" />
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-200 font-mono">
+          <h2 className="text-base font-bold uppercase tracking-wider text-white font-heading">
             Monitored Applications ({appList.length})
           </h2>
         </div>
@@ -248,10 +248,10 @@ export function AppCards() {
             <Card
               key={app.id}
               onClick={() => selectApp(app.id)}
-              className={`bg-slate-900/90 border transition-all shadow-lg shadow-black/20 cursor-pointer group ${
+              className={`hud-panel transition-all duration-200 cursor-pointer group ${
                 isSelected
-                  ? "border-cyan-500/80 ring-1 ring-cyan-500/40"
-                  : "border-slate-800/90 hover:border-slate-700"
+                  ? "border-cyan-400 ring-1 ring-cyan-400/50 shadow-[0_0_20px_rgba(6,182,212,0.25)]"
+                  : "hover:border-cyan-400/60"
               }`}
             >
               <CardHeader className="pb-2 pt-4 px-5">
@@ -259,7 +259,7 @@ export function AppCards() {
                   {/* Left: App Info */}
                   <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex items-center gap-2.5 flex-wrap">
-                      <CardTitle className="text-base font-bold text-white font-mono tracking-tight group-hover:text-cyan-300 transition-colors flex items-center gap-1.5 truncate">
+                      <CardTitle className="text-lg font-bold text-white font-heading tracking-wide group-hover:text-cyan-300 transition-colors flex items-center gap-1.5 truncate">
                         {app.name}
                         <ChevronRight className="h-4 w-4 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                       </CardTitle>
@@ -267,15 +267,15 @@ export function AppCards() {
                         variant="outline"
                         className={`text-[10px] font-mono uppercase px-2 py-0.5 tracking-wider font-semibold shrink-0 ${
                           app.status === "active"
-                            ? "bg-emerald-950/80 border-emerald-800/80 text-emerald-400"
-                            : "bg-rose-950/80 border-rose-800/80 text-rose-400"
+                            ? "bg-emerald-950/80 border-emerald-700/80 text-emerald-300"
+                            : "bg-rose-950/80 border-rose-700/80 text-rose-300"
                         }`}
                       >
                         {app.status}
                       </Badge>
                     </div>
                     <CardDescription className="text-xs text-slate-300 font-sans line-clamp-2">
-                      <span className="text-cyan-400 font-semibold">
+                      <span className="text-amber-400 font-semibold font-mono text-[11px] uppercase tracking-wider">
                         {app.category}
                       </span>{" "}
                       — {app.description}

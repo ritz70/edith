@@ -33,11 +33,11 @@ export default function DashboardPage() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 p-8 font-mono flex items-center justify-center">
-        <div className="flex items-center gap-3">
+      <div className="min-h-screen stark-grid text-slate-100 p-8 font-mono flex items-center justify-center">
+        <div className="flex items-center gap-3 bg-[#071228]/80 border border-cyan-500/30 px-5 py-3 rounded-lg shadow-lg shadow-cyan-950/40">
           <div className="h-4 w-4 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin" />
-          <p className="text-slate-400 text-sm">
-            Initializing E.D.I.T.H. Trust Heuristics Core...
+          <p className="text-cyan-300 text-sm font-mono tracking-wide">
+            Initializing E.D.I.T.H. core...
           </p>
         </div>
       </div>
@@ -45,7 +45,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen stark-grid text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
       <DashboardHeader />
 
       <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
